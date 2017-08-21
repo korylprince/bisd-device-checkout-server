@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -59,6 +60,59 @@ func getStudentName(ctx context.Context, otherID string) (string, error) {
 	}
 
 	return formalizeName(firstName) + " " + formalizeName(lastName), nil
+}
+
+//calculateCharge parses the charge syntax and returns a proper total charge
+func calculateCharge(charges string) float32 {
+	var total float32
+	for _, charge := range strings.Split(charges, "|") {
+		if split := strings.Split(strings.TrimSpace(charge), ":"); len(split) == 2 {
+			c, err := strconv.ParseFloat(split[1], 32)
+			if err != nil {
+				continue
+			}
+			total += float32(c)
+		}
+	}
+	return total
+}
+
+//validateStudent validates that a student doesn't have a device checked out already and has no open charges
+func validateStudent(ctx context.Context, name string) error {
+	tx := ctx.Value(InventoryTransactionKey).(*sql.Tx)
+
+	rows, err := tx.Query(`SELECT 1 FROM devices WHERE user = ? AND status = 'Checked Out' AND model = "C740-C4PE";`, name)
+	if err != nil {
+		return &Error{Description: fmt.Sprintf("Could not query devices for Student: %s", name), Err: err}
+	}
+	if rows.Next() {
+		rows.Close()
+		return &Error{Description: fmt.Sprintf("Student %s has existing device checked out", name), Err: err, RequestError: true}
+	}
+	rows.Close()
+
+	rows, err = tx.Query(`SELECT amount_paid, charges FROM charges WHERE user=?;`, name)
+	if err != nil {
+		return &Error{Description: fmt.Sprintf("Could not query charges for Student: %s", name), Err: err}
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var paid float32
+		var charges string
+		if err = rows.Scan(&paid, &charges); err != nil {
+			return &Error{Description: "Could not scan charge row", Err: err}
+		}
+		if paid < calculateCharge(charges) {
+			return &Error{Description: fmt.Sprintf("Student %s has unpaid charges", name), Err: err, RequestError: true}
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		return &Error{Description: fmt.Sprintf("Could not scan charges for Student: %s", name), Err: err}
+	}
+
+	return nil
 }
 
 //GetStudentList returns a list of all Students

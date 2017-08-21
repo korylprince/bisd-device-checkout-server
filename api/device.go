@@ -14,6 +14,11 @@ func CheckoutDevice(ctx context.Context, bagTag, otherID string) error {
 		return err
 	}
 
+	err = validateStudent(ctx, user)
+	if err != nil {
+		return err
+	}
+
 	tx := ctx.Value(InventoryTransactionKey).(*sql.Tx)
 	commitUser := ctx.Value(UserKey).(*User)
 
