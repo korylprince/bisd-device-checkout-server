@@ -12,6 +12,7 @@ type Student struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	OtherID   string `json:"other_id"`
+	Grade     int    `json:"grade"`
 }
 
 //formalizeName tries to return the pretty (capitalized) version of the given name
@@ -64,12 +65,12 @@ func getStudentName(ctx context.Context, otherID string) (string, error) {
 func GetStudentList(ctx context.Context) ([]*Student, error) {
 	tx := ctx.Value(SkywardTransactionKey).(*sql.Tx)
 
-	//FIXME filter grades
 	rows, err := tx.Query(`
 	SELECT
 		name."FIRST-NAME" AS First_Name,
 		name."LAST-NAME" AS Last_Name,
-		student."OTHER-ID" AS Other_I_D
+		student."OTHER-ID" AS Other_I_D,
+		(12 - (student."GRAD-YR" - entity."SCHOOL-YEAR")) AS Grade
 	FROM PUB.NAME AS name
 	INNER JOIN PUB."STUDENT" AS student ON 
 		name."NAME-ID" = student."NAME-ID"
@@ -95,7 +96,7 @@ func GetStudentList(ctx context.Context) ([]*Student, error) {
 
 	for rows.Next() {
 		s := new(Student)
-		if err := rows.Scan(&(s.FirstName), &(s.LastName), &(s.OtherID)); err != nil {
+		if err := rows.Scan(&(s.FirstName), &(s.LastName), &(s.OtherID), &(s.Grade)); err != nil {
 			return nil, &Error{Description: "Could not scan Student row", Err: err}
 		}
 
