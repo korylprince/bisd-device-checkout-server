@@ -67,7 +67,7 @@ func calculateCharge(charges string) float32 {
 	var total float32
 	for _, charge := range strings.Split(charges, "|") {
 		if split := strings.Split(strings.TrimSpace(charge), ":"); len(split) == 2 {
-			c, err := strconv.ParseFloat(split[1], 32)
+			c, err := strconv.ParseFloat(strings.TrimSpace(split[1]), 32)
 			if err != nil {
 				continue
 			}
