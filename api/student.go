@@ -77,8 +77,8 @@ func calculateCharge(charges string) float32 {
 	return total
 }
 
-//validateStudent validates that a student doesn't have a device checked out already and has no open charges
-func validateStudent(ctx context.Context, name string) error {
+//validateStudent validates that a student doesn't have a device checked out already and has no open charges (if not red bag)
+func validateStudent(ctx context.Context, name string, redBag bool) error {
 	tx := ctx.Value(InventoryTransactionKey).(*sql.Tx)
 
 	rows, err := tx.Query(`SELECT 1 FROM devices WHERE user = ? AND status = 'Checked Out' AND model = "C740-C4PE";`, name)
@@ -90,6 +90,11 @@ func validateStudent(ctx context.Context, name string) error {
 		return &Error{Description: fmt.Sprintf("Student %s has existing device checked out", name), Err: err, RequestError: true}
 	}
 	rows.Close()
+
+	//don't check for charges if red bag
+	if redBag {
+		return nil
+	}
 
 	rows, err = tx.Query(`SELECT amount_paid, charges FROM charges WHERE user=?;`, name)
 	if err != nil {

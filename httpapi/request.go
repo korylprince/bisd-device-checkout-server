@@ -9,4 +9,5 @@ type AuthenticateRequest struct {
 //CheckoutRequest is a request to check out a device in the inventory
 type CheckoutRequest struct {
 	UserID string `json:"user_id"`
+	RedBag bool   `json:"red_bag,omitemtpy"`
 }

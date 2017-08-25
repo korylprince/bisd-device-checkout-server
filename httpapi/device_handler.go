@@ -22,7 +22,7 @@ func handleCheckoutDevice(w http.ResponseWriter, r *http.Request) *handlerRespon
 		return handleError(http.StatusBadRequest, fmt.Errorf("Could not decode JSON: %v", err))
 	}
 
-	err = api.CheckoutDevice(r.Context(), bagTag, req.UserID)
+	err = api.CheckoutDevice(r.Context(), bagTag, req.UserID, req.RedBag)
 	if resp := checkAPIError(err); resp != nil {
 		return resp
 	}

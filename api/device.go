@@ -8,13 +8,13 @@ import (
 )
 
 //CheckoutDevice checks out the device with the given Bag Tag to the student with the given Other ID
-func CheckoutDevice(ctx context.Context, bagTag, otherID string) error {
+func CheckoutDevice(ctx context.Context, bagTag, otherID string, redBag bool) error {
 	user, err := getStudentName(ctx, otherID)
 	if err != nil {
 		return err
 	}
 
-	err = validateStudent(ctx, user)
+	err = validateStudent(ctx, user, redBag)
 	if err != nil {
 		return err
 	}
