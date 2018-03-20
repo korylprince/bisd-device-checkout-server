@@ -1,0 +1,53 @@
+{
+	"ImportPath": "github.com/korylprince/bisd-device-checkout-server",
+	"GoVersion": "go1.10",
+	"GodepVersion": "v80",
+	"Deps": [
+		{
+			"ImportPath": "github.com/alexbrainman/odbc",
+			"Rev": "018d5390911cc2771e6f26d13a69d371b08ce5ec"
+		},
+		{
+			"ImportPath": "github.com/alexbrainman/odbc/api",
+			"Rev": "018d5390911cc2771e6f26d13a69d371b08ce5ec"
+		},
+		{
+			"ImportPath": "github.com/go-sql-driver/mysql",
+			"Comment": "v1.3-59-g1a676ac",
+			"Rev": "1a676ac6e4dce68e9303a1800773861350374a9e"
+		},
+		{
+			"ImportPath": "github.com/gorilla/handlers",
+			"Comment": "v1.3.0",
+			"Rev": "90663712d74cb411cbef281bc1e08c19d1a76145"
+		},
+		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Comment": "v1.6.1-13-g4dbd923",
+			"Rev": "4dbd923b0c9e99ff63ad54b0e9705ff92d3cdb06"
+		},
+		{
+			"ImportPath": "github.com/kelseyhightower/envconfig",
+			"Comment": "v1.3.0-12-gb2c5c87",
+			"Rev": "b2c5c876e2659d9060d82e9b8494150d53854cc4"
+		},
+		{
+			"ImportPath": "github.com/korylprince/go-ad-auth",
+			"Rev": "c56f3908b4d8f5351dca5fa6d70ec5b0d7bed9b9"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/windows",
+			"Rev": "7dca6fe1f43775aa6d1334576870ff63f978f539"
+		},
+		{
+			"ImportPath": "gopkg.in/asn1-ber.v1",
+			"Comment": "v1.2",
+			"Rev": "379148ca0225df7a432012b8df0355c2a2063ac0"
+		},
+		{
+			"ImportPath": "gopkg.in/ldap.v2",
+			"Comment": "v2.5.1",
+			"Rev": "bb7a9ca6e4fbc2129e3db588a34bc970ffe811a9"
+		}
+	]
+}
