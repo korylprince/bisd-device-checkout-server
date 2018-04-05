@@ -24,6 +24,7 @@ FROM alpine:3.7
 RUN apk add --no-cache ca-certificates unixodbc libstdc++
 
 COPY --from=builder /odbc /usr/local/lib/
+RUN rm /usr/local/lib/PGODBC.LIC
 COPY --from=builder /go/bin/fileenv /
 COPY --from=builder /go/bin/bisd-device-checkout-server /
 COPY setenv.sh /
