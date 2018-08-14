@@ -29,6 +29,15 @@ func formalizeName(name string) string {
 		name = name[0:idx] + "-" + formalizeName(name[idx+1:])
 	}
 
+	//Fix name with multiple names
+	if len(strings.Split(name, " ")) > 1 {
+		var names []string
+		for _, n := range strings.Split(name, " ") {
+			names = append(names, formalizeName(n))
+		}
+		return strings.Join(names, " ")
+	}
+
 	return name
 }
 
