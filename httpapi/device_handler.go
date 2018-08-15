@@ -1,8 +1,6 @@
 package httpapi
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -11,18 +9,10 @@ import (
 
 //POST /devices/:bagTag/checkout
 func handleCheckoutDevice(w http.ResponseWriter, r *http.Request) *handlerResponse {
+	otherID := mux.Vars(r)["otherID"]
 	bagTag := mux.Vars(r)["bagTag"]
 
-	//read Other ID
-	var req *CheckoutRequest
-	d := json.NewDecoder(r.Body)
-
-	err := d.Decode(&req)
-	if err != nil {
-		return handleError(http.StatusBadRequest, fmt.Errorf("Could not decode JSON: %v", err))
-	}
-
-	err = api.CheckoutDevice(r.Context(), bagTag, req.UserID, req.RedBag)
+	err := api.CheckoutDevice(r.Context(), otherID, bagTag)
 	if resp := checkAPIError(err); resp != nil {
 		return resp
 	}

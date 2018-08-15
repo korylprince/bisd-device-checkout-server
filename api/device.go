@@ -4,35 +4,41 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 )
 
-//CheckoutDevice checks out the device with the given Bag Tag to the student with the given Other ID
-func CheckoutDevice(ctx context.Context, bagTag, otherID string, redBag bool) error {
-	user, err := getStudentName(ctx, otherID)
+//CheckoutDevice checks out the device with the given bagTag to the student with the given otherID
+func CheckoutDevice(ctx context.Context, otherID, bagTag string) error {
+	student, err := GetStudent(ctx, otherID)
 	if err != nil {
 		return err
 	}
 
-	err = validateStudent(ctx, user, redBag)
+	status, err := student.Status(ctx)
 	if err != nil {
 		return err
+	}
+
+	if status.Type == "none" {
+		return &Error{Description: fmt.Sprintf("Student unable to check out Chromebook: %s", status.Reason), Err: nil, RequestError: true}
 	}
 
 	tx := ctx.Value(InventoryTransactionKey).(*sql.Tx)
 	commitUser := ctx.Value(UserKey).(*User)
 
-	note := fmt.Sprintf("\n%s %s: Checked out Bag Tag %s to %s\n",
+	note := fmt.Sprintf("\n%s %s: Checked out Bag Tag %s (%s) to %s\n",
 		time.Now().Format("01/02/06"),
 		commitUser.DisplayName,
 		bagTag,
-		user,
+		strings.Replace(status.Type, "_", " ", -1),
+		student.Name(),
 	)
 
 	res, err := tx.Exec(`
 	UPDATE devices SET User = ?, Status = "Checked Out", Notes = CONCAT(Notes, ?)
 	WHERE bag_tag = ? AND model = "C740-C4PE" AND Status = "Storage";
-	`, user, note, bagTag)
+	`, student.Name(), note, bagTag)
 
 	if err != nil {
 		return &Error{Description: fmt.Sprintf("Could not update Device(%s)", bagTag), Err: err}

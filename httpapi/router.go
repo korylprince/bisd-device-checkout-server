@@ -20,7 +20,8 @@ func NewRouter(w io.Writer, config *api.AuthConfig, s SessionStore, inventoryDB,
 	r := mux.NewRouter()
 
 	r.Path("/students").Methods("GET").Handler(m(handleReadStudentList))
-	r.Path("/devices/{bagTag:[0-9]{4}}/checkout").Methods("POST").Handler(m(handleCheckoutDevice))
+	r.Path("/students/{otherID:[0-9]{6}}/status").Methods("GET").Handler(m(handleReadStudentStatus))
+	r.Path("/students/{otherID:[0-9]{6}}/devices/{bagTag:[0-9]{4}}").Methods("POST").Handler(m(handleCheckoutDevice))
 
 	r.Path("/auth").Methods("POST").Handler(logMiddleware(jsonMiddleware(txMiddleware(handleAuthenticate(config, s), inventoryDB, skywardDB)), w))
 
