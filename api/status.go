@@ -8,11 +8,15 @@ import (
 //ChargeURLBase is the base URL used for charge links
 var ChargeURLBase = "/charges/edit?type=id&search="
 
+//DeviceURLBase is the base URL used for device links
+var DeviceURLBase = "/edit?type=id&search="
+
 //Status represents the type of Chromebook a student will receive
 type Status struct {
-	Type   string   `json:"type"`
-	Reason string   `json:"reason,omitempty"`
-	Links  []string `json:"links,omitempty"`
+	Type     string   `json:"type"`
+	Reason   string   `json:"reason,omitempty"`
+	LinkType string   `json:"link_type,omitempty"`
+	Links    []string `json:"links,omitempty"`
 }
 
 //Status returns the Status of the student
@@ -21,6 +25,27 @@ func (s *Student) Status(ctx context.Context) (*Status, error) {
 		return &Status{Type: "none", Reason: "T2E2 Agreement not completed"}, nil
 	}
 
+	//check for devices checked out
+	devices, err := getDeviceList(ctx, s.Name())
+	if err != nil {
+		return nil, err
+	}
+
+	if len(devices) > 0 {
+		var links []string
+		for _, d := range devices {
+			links = append(links, DeviceURLBase+strconv.Itoa(d))
+		}
+
+		return &Status{
+			Type:     "none",
+			Reason:   "Student has device(s) checked out",
+			LinkType: "device",
+			Links:    links,
+		}, nil
+	}
+
+	//check for charges
 	charges, err := getChargeList(ctx, s.Name())
 	if err != nil {
 		return nil, err
@@ -56,8 +81,18 @@ func (s *Student) Status(ctx context.Context) (*Status, error) {
 	}
 
 	if len(noneCharges) > 0 {
-		return &Status{Type: "none", Reason: "Student has charge(s) with less than 50% paid", Links: links}, nil
+		return &Status{
+			Type:     "none",
+			Reason:   "Student has charge(s) with less than 50% paid",
+			LinkType: "charge",
+			Links:    links,
+		}, nil
 	}
 
-	return &Status{Type: "red_bag", Reason: "Student has unpaid charge(s)", Links: links}, nil
+	return &Status{
+		Type:     "red_bag",
+		Reason:   "Student has unpaid charge(s)",
+		LinkType: "charge",
+		Links:    links,
+	}, nil
 }
