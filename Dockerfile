@@ -20,7 +20,7 @@ RUN git clone --branch "$VERSION" --single-branch --depth 1 \
 RUN go install github.com/korylprince/fileenv
 RUN go install github.com/korylprince/bisd-device-checkout-server
 
-FROM alpine:3.7
+FROM alpine:3.8
 
 RUN apk add --no-cache ca-certificates unixodbc libstdc++
 
