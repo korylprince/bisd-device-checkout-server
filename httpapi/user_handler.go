@@ -32,11 +32,11 @@ func handleAuthenticate(config *api.AuthConfig, s SessionStore) returnHandler {
 			return handleError(http.StatusUnauthorized, errors.New("Bad username or password"))
 		}
 
-		key, err := s.Create(user)
+		id, err := s.Create(user)
 		if err != nil {
 			return handleError(http.StatusInternalServerError, fmt.Errorf("Could not create session: %v", err))
 		}
 
-		return &handlerResponse{Code: http.StatusOK, Body: &AuthenticateResponse{SessionKey: key, User: user}}
+		return &handlerResponse{Code: http.StatusOK, Body: &AuthenticateResponse{SessionID: id, User: user}}
 	}
 }

@@ -10,6 +10,7 @@ import (
 	"io"
 	"mime"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/korylprince/bisd-device-checkout-server/api"
@@ -90,12 +91,18 @@ func jsonMiddleware(next returnHandler) returnHandler {
 
 func authMiddleware(next returnHandler, s SessionStore) returnHandler {
 	return func(w http.ResponseWriter, r *http.Request) *handlerResponse {
-		key := r.Header.Get("X-Session-Key")
-		if key == "" {
-			return handleError(http.StatusUnauthorized, errors.New("X-Session-Key header empty"))
+		auth := r.Header.Get("Authorization")
+		if auth == "" {
+			return handleError(http.StatusUnauthorized, errors.New("No Authorization header"))
 		}
 
-		sess, err := s.Check(key)
+		if !strings.HasPrefix(auth, `Session id="`) || len(auth) < 13 {
+			return handleError(http.StatusBadRequest, errors.New("Invalid Authorization header"))
+		}
+
+		id := auth[12 : len(auth)-1]
+
+		sess, err := s.Check(id)
 		if err != nil {
 			return handleError(http.StatusInternalServerError, fmt.Errorf("Could not check session key: %v", err))
 		}
