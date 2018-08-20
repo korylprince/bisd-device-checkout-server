@@ -71,8 +71,9 @@ func getDeviceList(ctx context.Context, name string) ([]int, error) {
 	return devices, nil
 }
 
-//CheckoutDevice checks out the device with the given bagTag to the student with the given otherID
-func CheckoutDevice(ctx context.Context, otherID, bagTag string) error {
+//CheckoutDevice checks out the device with the given bagTag to the student with the given otherID.
+//extraNote, if non-empty, will be appended to the notes field
+func CheckoutDevice(ctx context.Context, otherID, bagTag, extraNote string) error {
 	student, err := GetStudent(ctx, otherID)
 	if err != nil {
 		return err
@@ -106,6 +107,10 @@ func CheckoutDevice(ctx context.Context, otherID, bagTag string) error {
 		strings.Replace(status.Type, "_", " ", -1),
 		student.Name(),
 	)
+
+	if extraNote != "" {
+		note = fmt.Sprintf("%s\n\t%s\n", note, extraNote)
+	}
 
 	res, err := tx.Exec(`
 	UPDATE devices SET User = ?, Status = "Checked Out", Notes = CONCAT(Notes, ?)
