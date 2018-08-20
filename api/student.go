@@ -34,16 +34,16 @@ func formalizeName(name string) string {
 
 //Student represents a Skyward Student
 type Student struct {
-	FirstName  string  `json:"first_name"`
-	LastName   string  `json:"last_name"`
-	OtherID    string  `json:"other_id"`
-	Grade      int     `json:"grade"`
-	T2E2Status *string `json:"-"`
+	FirstName  string
+	LastName   string
+	OtherID    string
+	Grade      int
+	T2E2Status *string
 }
 
 //Name returns to formalized name of the Student
 func (s Student) Name() string {
-	return fmt.Sprintf("%s %s", formalizeName(s.FirstName), formalizeName(s.LastName))
+	return fmt.Sprintf("%s %s", s.FirstName, s.LastName)
 }
 
 //GetStudent returns the Student with the given otherID
@@ -51,6 +51,11 @@ func GetStudent(ctx context.Context, otherID string) (*Student, error) {
 	tx := ctx.Value(SkywardTransactionKey).(*sql.Tx)
 
 	s := &Student{}
+
+	var (
+		firstName *string
+		lastName  *string
+	)
 
 	err := tx.QueryRow(`
 	SELECT
@@ -94,8 +99,8 @@ func GetStudent(ctx context.Context, otherID string) (*Student, error) {
 
 	WITH (NOLOCK)
 	`, otherID).Scan(
-		&(s.FirstName),
-		&(s.LastName),
+		&(firstName),
+		&(lastName),
 		&(s.OtherID),
 		&(s.Grade),
 		&(s.T2E2Status),
@@ -107,6 +112,9 @@ func GetStudent(ctx context.Context, otherID string) (*Student, error) {
 	case err != nil:
 		return nil, &Error{Description: fmt.Sprintf("Could not query Student(%s)", otherID), Err: err}
 	}
+
+	s.FirstName = formalizeName(*firstName)
+	s.LastName = formalizeName(*lastName)
 
 	return s, nil
 }
@@ -144,11 +152,19 @@ func GetStudentList(ctx context.Context) ([]*Student, error) {
 
 	var students []*Student
 
+	var (
+		firstName *string
+		lastName  *string
+	)
+
 	for rows.Next() {
 		s := new(Student)
-		if err := rows.Scan(&(s.FirstName), &(s.LastName), &(s.OtherID), &(s.Grade)); err != nil {
+		if err := rows.Scan(&(firstName), &(lastName), &(s.OtherID), &(s.Grade)); err != nil {
 			return nil, &Error{Description: "Could not scan Student row", Err: err}
 		}
+
+		s.FirstName = formalizeName(*firstName)
+		s.LastName = formalizeName(*lastName)
 
 		students = append(students, s)
 	}
