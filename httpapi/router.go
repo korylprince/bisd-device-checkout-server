@@ -27,5 +27,5 @@ func NewRouter(w io.Writer, config *api.AuthConfig, s SessionStore, inventoryDB,
 
 	r.NotFoundHandler = m(notFoundHandler)
 
-	return http.StripPrefix("/api/1.2", r)
+	return http.StripPrefix("/api/1.3", r)
 }
