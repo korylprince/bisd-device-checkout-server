@@ -109,7 +109,15 @@ func CheckoutDevice(ctx context.Context, otherID, bagTag, extraNote string) erro
 	)
 
 	if extraNote != "" {
-		note = fmt.Sprintf("%s\n\t%s\n", note, extraNote)
+		//indent extraNote
+		extraNote = strings.Replace(extraNote, "\r\n", "\n", -1)
+
+		var extraNoteLines []string
+		for _, line := range strings.Split(extraNote, "\n") {
+			extraNoteLines = append(extraNoteLines, "\t"+line)
+		}
+
+		note = fmt.Sprintf("%s%s\n", note, strings.Join(extraNoteLines, "\n"))
 	}
 
 	res, err := tx.Exec(`
