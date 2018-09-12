@@ -84,8 +84,8 @@ func CheckoutDevice(ctx context.Context, otherID, bagTag, extraNote string) erro
 		return err
 	}
 
-	if status.Type == "none" {
-		return &Error{Description: fmt.Sprintf("Student unable to check out Chromebook: %s", status.Reason), Err: nil, RequestError: true}
+	if status.Type == StatusTypeNone {
+		return &Error{Description: fmt.Sprintf("Student unable to check out Chromebook: %s", status.Issues[0].Description), Err: nil, RequestError: true}
 	}
 
 	deviceStatus, err := getDevice(ctx, bagTag)
@@ -104,7 +104,7 @@ func CheckoutDevice(ctx context.Context, otherID, bagTag, extraNote string) erro
 		time.Now().Format("01/02/06"),
 		commitUser.DisplayName,
 		bagTag,
-		strings.Replace(status.Type, "_", " ", -1),
+		strings.Replace(string(status.Type), "_", " ", -1),
 		student.Name(),
 	)
 

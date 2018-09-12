@@ -11,18 +11,46 @@ var ChargeURLBase = "/charges/edit?type=id&search="
 //DeviceURLBase is the base URL used for device links
 var DeviceURLBase = "/edit?type=id&search="
 
-//Status represents the type of Chromebook a student will receive
+//LinkType is the type of a link
+type LinkType string
+
+//Link types
+const (
+	LinkTypeDevice LinkType = "device"
+	LinkTypeCharge LinkType = "charge"
+)
+
+//Issue represents an issue with a student
+type Issue struct {
+	Description string   `json:"description,omitempty"`
+	Link        string   `json:"link,omitempty"`
+	LinkType    LinkType `json:"link_type,omitempty"`
+	LinkValue   float32  `json:"link_value,omitempty"`
+}
+
+//StatusType is the type of Chromebook a student will receive
+type StatusType string
+
+//Status types
+const (
+	StatusTypeNone     StatusType = "none"
+	StatusTypeRedBag   StatusType = "red_bag"
+	StatusTypeBlackBag StatusType = "black_bag"
+)
+
+//Status represents the status of a student
 type Status struct {
-	Type     string   `json:"type"`
-	Reason   string   `json:"reason,omitempty"`
-	LinkType string   `json:"link_type,omitempty"`
-	Links    []string `json:"links,omitempty"`
+	Type   StatusType `json:"type"`
+	Issues []*Issue   `json:"issues,omitempty"`
 }
 
 //Status returns the Status of the student
 func (s *Student) Status(ctx context.Context) (*Status, error) {
+	status := &Status{Issues: make([]*Issue, 0)}
+
 	if s.T2E2Status == nil {
-		return &Status{Type: "none", Reason: "T2E2 Agreement not completed"}, nil
+		status.Type = StatusTypeNone
+		status.Issues = append(status.Issues, &Issue{Description: "T2E2 Agreement not completed"})
 	}
 
 	//check for devices checked out
@@ -32,17 +60,14 @@ func (s *Student) Status(ctx context.Context) (*Status, error) {
 	}
 
 	if len(devices) > 0 {
-		var links []string
+		status.Type = StatusTypeNone
 		for _, d := range devices {
-			links = append(links, DeviceURLBase+strconv.Itoa(d))
+			status.Issues = append(status.Issues, &Issue{
+				Description: "Student has device checked out",
+				Link:        DeviceURLBase + strconv.Itoa(d),
+				LinkType:    LinkTypeDevice,
+			})
 		}
-
-		return &Status{
-			Type:     "none",
-			Reason:   "Student has device(s) checked out",
-			LinkType: "device",
-			Links:    links,
-		}, nil
 	}
 
 	//check for charges
@@ -66,33 +91,45 @@ func (s *Student) Status(ctx context.Context) (*Status, error) {
 	}
 
 	if len(noneCharges) == 0 && len(redCharges) == 0 {
-		if *(s.T2E2Status) == "No" {
-			return &Status{Type: "red_bag", Reason: "T2E2 Agreement does not permit student to take home device"}, nil
+		if s.T2E2Status != nil && *(s.T2E2Status) == "No" {
+			if status.Type != StatusTypeNone {
+				status.Type = StatusTypeRedBag
+			}
+			status.Issues = append(status.Issues, &Issue{
+				Description: "T2E2 Agreement does not permit student to take home device",
+			})
+		} else {
+			if status.Type != StatusTypeNone {
+				status.Type = StatusTypeBlackBag
+			}
 		}
-		return &Status{Type: "black_bag"}, nil
+		return status, nil
 	}
 
-	var links []string
+	if len(noneCharges) == 0 && status.Type != StatusTypeNone {
+		status.Type = StatusTypeRedBag
+	} else {
+		status.Type = StatusTypeNone
+	}
+
 	for _, c := range noneCharges {
-		links = append(links, ChargeURLBase+strconv.Itoa(c.ID))
+		status.Issues = append(status.Issues, &Issue{
+			Description: "Student has charge with less than 50% paid",
+			Link:        ChargeURLBase + strconv.Itoa(c.ID),
+			LinkType:    LinkTypeCharge,
+			LinkValue:   c.AmountCharged() - c.AmountPaid,
+		})
+
 	}
+
 	for _, c := range redCharges {
-		links = append(links, ChargeURLBase+strconv.Itoa(c.ID))
+		status.Issues = append(status.Issues, &Issue{
+			Description: "Student has unpaid charge",
+			Link:        ChargeURLBase + strconv.Itoa(c.ID),
+			LinkType:    LinkTypeCharge,
+			LinkValue:   c.AmountCharged() - c.AmountPaid,
+		})
 	}
 
-	if len(noneCharges) > 0 {
-		return &Status{
-			Type:     "none",
-			Reason:   "Student has charge(s) with less than 50% paid",
-			LinkType: "charge",
-			Links:    links,
-		}, nil
-	}
-
-	return &Status{
-		Type:     "red_bag",
-		Reason:   "Student has unpaid charge(s)",
-		LinkType: "charge",
-		Links:    links,
-	}, nil
+	return status, nil
 }
