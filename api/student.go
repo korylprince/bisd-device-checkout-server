@@ -128,9 +128,10 @@ func GetStudentList(ctx context.Context) ([]*Student, error) {
 		name."FIRST-NAME" AS First_Name,
 		name."LAST-NAME" AS Last_Name,
 		student."OTHER-ID" AS Other_I_D,
-		(12 - (student."GRAD-YR" - entity."SCHOOL-YEAR")) AS Grade
+		(12 - (student."GRAD-YR" - entity."SCHOOL-YEAR")) AS Grade,
+		data."STATUS" AS Status
 	FROM PUB.NAME AS name
-	INNER JOIN PUB."STUDENT" AS student ON 
+	INNER JOIN PUB."STUDENT" AS student ON
 		name."NAME-ID" = student."NAME-ID"
 
 	INNER JOIN PUB."STUDENT-ENTITY" as sentity ON
@@ -138,6 +139,24 @@ func GetStudentList(ctx context.Context) ([]*Student, error) {
 
 	INNER JOIN PUB."ENTITY" as entity ON
 		entity."ENTITY-ID" = sentity."ENTITY-ID"
+
+    LEFT JOIN (
+		SELECT
+			data."QUDDAT-SRC-ID" AS "STUDENT-ID",
+			data."QUDDAT-CHAR" AS "STATUS"
+
+		FROM PUB."QUDDAT-DATA" AS data
+
+		INNER JOIN PUB."QUDTBL-TABLES" AS tables ON
+			data."QUDDAT-STORAGE-TYPE" = 'Custom Student' AND
+			data."QUDTBL-TABLE-ID" = tables."QUDTBL-TABLE-ID" AND
+			tables."QUDTBL-DESC" = '18-19 T2E2'
+
+		INNER JOIN PUB."QUDFLD-FIELDS" AS fields ON
+			data."QUDFLD-FIELD-ID" = fields."QUDFLD-FIELD-ID" AND
+			fields."QUDFLD-FIELD-LABEL" = 'Can_Take_Chromebook_Home'
+    ) AS data ON
+		student."STUDENT-ID" = data."STUDENT-ID"
 
 	WHERE sentity."STUDENT-STATUS" = 'A' AND
 	student."GRAD-YR" >= entity."SCHOOL-YEAR" AND
@@ -159,7 +178,7 @@ func GetStudentList(ctx context.Context) ([]*Student, error) {
 
 	for rows.Next() {
 		s := new(Student)
-		if err := rows.Scan(&(firstName), &(lastName), &(s.OtherID), &(s.Grade)); err != nil {
+		if err := rows.Scan(&(firstName), &(lastName), &(s.OtherID), &(s.Grade), &(s.T2E2Status)); err != nil {
 			return nil, &Error{Description: "Could not scan Student row", Err: err}
 		}
 

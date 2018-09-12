@@ -47,3 +47,37 @@ func handleReadStudentStatus(w http.ResponseWriter, r *http.Request) *handlerRes
 
 	return &handlerResponse{Code: http.StatusOK, Body: status}
 }
+
+//GET /students?status=true
+func handleReadStudentStatuses(w http.ResponseWriter, r *http.Request) *handlerResponse {
+	type student struct {
+		FirstName string      `json:"first_name"`
+		LastName  string      `json:"last_name"`
+		OtherID   string      `json:"other_id"`
+		Grade     int         `json:"grade"`
+		Status    *api.Status `json:"status"`
+	}
+
+	students, err := api.GetStudentList(r.Context())
+	if resp := checkAPIError(err); resp != nil {
+		return resp
+	}
+
+	var list []*student
+
+	for _, stu := range students {
+		status, err := stu.Status(r.Context())
+		if resp := checkAPIError(err); resp != nil {
+			return resp
+		}
+		list = append(list, &student{
+			FirstName: stu.FirstName,
+			LastName:  stu.LastName,
+			OtherID:   stu.OtherID,
+			Grade:     stu.Grade,
+			Status:    status,
+		})
+	}
+
+	return &handlerResponse{Code: http.StatusOK, Body: list}
+}
