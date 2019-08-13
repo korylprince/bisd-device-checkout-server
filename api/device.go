@@ -29,7 +29,7 @@ func getDevice(ctx context.Context, bagTag string) (string, error) {
 		return "", &Error{Description: fmt.Sprintf("Could not query Device(%s)", bagTag), Err: err}
 	}
 
-	if *model != "C740-C4PE" {
+	if *model != "C740-C4PE" && *model != "C732T-C8VY" {
 		return fmt.Sprintf(`Bag Tag %s isn't a Chromebook (Model is "%s")`, bagTag, *model), nil
 	}
 
