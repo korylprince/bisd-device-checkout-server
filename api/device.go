@@ -122,7 +122,7 @@ func CheckoutDevice(ctx context.Context, otherID, bagTag, extraNote string) erro
 
 	res, err := tx.Exec(`
 	UPDATE devices SET User = ?, Status = "Checked Out", Notes = CONCAT(Notes, ?)
-	WHERE bag_tag = ? AND model = "C740-C4PE" AND Status = "Storage";
+	WHERE bag_tag = ? AND (model = "C740-C4PE" OR model = 'C732T-C8VY') AND Status = "Storage";
 	`, student.Name(), note, bagTag)
 
 	if err != nil {
