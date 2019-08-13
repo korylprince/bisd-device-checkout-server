@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/korylprince/bisd-device-checkout-server",
-	"GoVersion": "go1.10",
+	"GoVersion": "go1.12",
 	"GodepVersion": "v80",
 	"Deps": [
 		{
