@@ -29,7 +29,7 @@ func getDevice(ctx context.Context, bagTag string) (string, error) {
 		return "", &Error{Description: fmt.Sprintf("Could not query Device(%s)", bagTag), Err: err}
 	}
 
-	if *model != "C740-C4PE" && *model != "C732T-C8VY" {
+	if *model != "C732T-C8VY" && *model != "Chromebook 3100" {
 		return fmt.Sprintf(`Bag Tag %s isn't a Chromebook (Model is "%s")`, bagTag, *model), nil
 	}
 
@@ -122,7 +122,7 @@ func CheckoutDevice(ctx context.Context, otherID, bagTag, extraNote string) erro
 
 	res, err := tx.Exec(`
 	UPDATE devices SET User = ?, Status = "Checked Out", Notes = CONCAT(Notes, ?)
-	WHERE bag_tag = ? AND (model = "C740-C4PE" OR model = 'C732T-C8VY') AND Status = "Storage";
+	WHERE bag_tag = ? AND (model = 'C732T-C8VY' OR model = 'Chromebook 3100') AND Status = "Storage";
 	`, student.Name(), note, bagTag)
 
 	if err != nil {

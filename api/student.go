@@ -84,7 +84,7 @@ func GetStudent(ctx context.Context, otherID string) (*Student, error) {
 		INNER JOIN PUB."QUDTBL-TABLES" AS tables ON
 			data."QUDDAT-STORAGE-TYPE" = 'Custom Student' AND
 			data."QUDTBL-TABLE-ID" = tables."QUDTBL-TABLE-ID" AND
-			tables."QUDTBL-DESC" = '19-20 T2E2'
+			tables."QUDTBL-DESC" = '20-21 T2E2'
 
 		INNER JOIN PUB."QUDFLD-FIELDS" AS fields ON
 			data."QUDFLD-FIELD-ID" = fields."QUDFLD-FIELD-ID" AND
@@ -150,7 +150,7 @@ func GetStudentList(ctx context.Context) ([]*Student, error) {
 		INNER JOIN PUB."QUDTBL-TABLES" AS tables ON
 			data."QUDDAT-STORAGE-TYPE" = 'Custom Student' AND
 			data."QUDTBL-TABLE-ID" = tables."QUDTBL-TABLE-ID" AND
-			tables."QUDTBL-DESC" = '19-20 T2E2'
+			tables."QUDTBL-DESC" = '20-21 T2E2'
 
 		INNER JOIN PUB."QUDFLD-FIELDS" AS fields ON
 			data."QUDFLD-FIELD-ID" = fields."QUDFLD-FIELD-ID" AND
