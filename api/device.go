@@ -14,12 +14,10 @@ func getDevice(ctx context.Context, bagTag string) (string, error) {
 	var (
 		user   *string
 		status *string
-		model  *string
 	)
-	err := tx.QueryRow("SELECT User, Status, Model FROM devices WHERE bag_tag = ?;", bagTag).Scan(
+	err := tx.QueryRow("SELECT User, Status FROM devices WHERE bag_tag = ?;", bagTag).Scan(
 		&(user),
 		&(status),
-		&(model),
 	)
 
 	switch {
@@ -27,10 +25,6 @@ func getDevice(ctx context.Context, bagTag string) (string, error) {
 		return fmt.Sprintf("Bag Tag %s doesn't exist", bagTag), nil
 	case err != nil:
 		return "", &Error{Description: fmt.Sprintf("Could not query Device(%s)", bagTag), Err: err}
-	}
-
-	if *model != "C732T-C8VY" && *model != "Chromebook 3100" {
-		return fmt.Sprintf(`Bag Tag %s isn't a Chromebook (Model is "%s")`, bagTag, *model), nil
 	}
 
 	if *status != "Storage" {
@@ -122,7 +116,7 @@ func CheckoutDevice(ctx context.Context, otherID, bagTag, extraNote string) erro
 
 	res, err := tx.Exec(`
 	UPDATE devices SET User = ?, Status = "Checked Out", Notes = CONCAT(Notes, ?)
-	WHERE bag_tag = ? AND (model = 'C732T-C8VY' OR model = 'Chromebook 3100') AND Status = "Storage";
+	WHERE bag_tag = ? AND Status = "Storage";
 	`, student.Name(), note, bagTag)
 
 	if err != nil {
