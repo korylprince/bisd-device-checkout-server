@@ -127,5 +127,13 @@ func CheckoutDevice(ctx context.Context, otherID, bagTag, extraNote string) erro
 		return &Error{Description: fmt.Sprintf("Device with Bag Tag %s is missing or not in storage", bagTag), Err: nil, RequestError: true}
 	}
 
+	_, err = tx.Exec(`
+	INSERT INTO verifications(device_id, username, date) 
+	SELECT id, ?, NOW() FROM devices WHERE bag_tag = ?;`,
+		commitUser.Username, bagTag)
+	if err != nil {
+		return &Error{Description: fmt.Sprintf("Could not verify Device(%s)", bagTag), Err: err}
+	}
+
 	return nil
 }
