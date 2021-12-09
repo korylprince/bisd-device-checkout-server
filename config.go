@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/kelseyhightower/envconfig"
-	auth "github.com/korylprince/go-ad-auth"
+	auth "github.com/korylprince/go-ad-auth/v3"
 )
 
 //Config represents options given in the environment

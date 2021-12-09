@@ -3,7 +3,7 @@ package api
 import (
 	"fmt"
 
-	auth "github.com/korylprince/go-ad-auth"
+	auth "github.com/korylprince/go-ad-auth/v3"
 )
 
 //AuthConfig holds configuration for connecting to an authentication source
@@ -21,18 +21,22 @@ type User struct {
 //Authenticate authenticates the given username and password against the given config,
 //returning user information if successful, nil if unsuccessful, or an error if one occurred.
 func Authenticate(config *AuthConfig, username, password string) (*User, error) {
-	status, attrs, err := auth.LoginWithAttrs(username, password, config.Group, config.ADConfig, []string{"displayName"})
+	status, entry, groups, err := auth.AuthenticateExtended(config.ADConfig, username, password, []string{"displayName"}, []string{config.Group})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Error attempting to authenticate as %s: %v", username, err)
 	}
 
 	if !status {
 		return nil, nil
 	}
 
-	if attrs == nil || len(attrs["displayName"]) != 1 || attrs["displayName"][0] == "" {
+	if len(groups) == 0 {
+		return nil, nil
+	}
+
+	if entry.GetAttributeValue("displayName") == "" {
 		return nil, fmt.Errorf("displayName doesn't exist for username: %s", username)
 	}
 
-	return &User{Username: username, DisplayName: attrs["displayName"][0]}, nil
+	return &User{Username: username, DisplayName: entry.GetAttributeValue("displayName")}, nil
 }

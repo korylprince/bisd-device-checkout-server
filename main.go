@@ -12,7 +12,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/korylprince/bisd-device-checkout-server/api"
 	"github.com/korylprince/bisd-device-checkout-server/httpapi"
-	auth "github.com/korylprince/go-ad-auth"
+	auth "github.com/korylprince/go-ad-auth/v3"
 )
 
 func main() {

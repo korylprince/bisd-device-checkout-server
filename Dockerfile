@@ -1,4 +1,4 @@
-FROM golang:1.12-alpine as builder
+FROM golang:1-alpine as builder
 
 ARG CREDENTIALS
 ARG VERSION
@@ -11,16 +11,11 @@ RUN git clone --branch "v11.7.3" --single-branch --depth 1 \
     https://git.bullardisd.net/administrator/skyward-odbc.git /odbc && \
     rm /odbc/PGODBC.LIC
 
-RUN git clone --branch "v1.1" --single-branch --depth 1 \
-    https://github.com/korylprince/fileenv.git /go/src/github.com/korylprince/fileenv
+RUN go install github.com/korylprince/fileenv@v1.1.0
+RUN go install "github.com/korylprince/bisd-device-checkout-server@$VERSION"
 
-RUN git clone --branch "$VERSION" --single-branch --depth 1 \
-    https://github.com/korylprince/bisd-device-checkout-server.git  /go/src/github.com/korylprince/bisd-device-checkout-server
 
-RUN go install github.com/korylprince/fileenv
-RUN go install github.com/korylprince/bisd-device-checkout-server
-
-FROM alpine:3.10
+FROM alpine:3.15
 
 RUN apk add --no-cache ca-certificates unixodbc libstdc++
 
