@@ -34,7 +34,7 @@ func (c *Charge) Description() string {
 	var reasons []string
 	for _, charge := range strings.Split(c.charges, "|") {
 		if split := strings.Split(strings.TrimSpace(charge), ":"); len(split) == 2 {
-			reasons = append(reasons, strings.TrimSpace(split[1]))
+			reasons = append(reasons, strings.TrimSpace(split[0]))
 		}
 	}
 	if len(reasons) == 0 {
