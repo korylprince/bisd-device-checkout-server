@@ -22,10 +22,11 @@ const (
 
 //Issue represents an issue with a student
 type Issue struct {
-	Description string   `json:"description,omitempty"`
-	Link        string   `json:"link,omitempty"`
-	LinkType    LinkType `json:"link_type,omitempty"`
-	LinkValue   float32  `json:"link_value,omitempty"`
+	Description    string   `json:"description,omitempty"`
+	Link           string   `json:"link,omitempty"`
+	LinkType       LinkType `json:"link_type,omitempty"`
+	LinkValue      float32  `json:"link_value,omitempty"`
+	LinkAdditional string   `json:"link_additional,omitempty"`
 }
 
 //StatusType is the type of Chromebook a student will receive
@@ -114,20 +115,22 @@ func (s *Student) Status(ctx context.Context) (*Status, error) {
 
 	for _, c := range noneCharges {
 		status.Issues = append(status.Issues, &Issue{
-			Description: "Student has charge with less than 50% paid",
-			Link:        ChargeURLBase + strconv.Itoa(c.ID),
-			LinkType:    LinkTypeCharge,
-			LinkValue:   c.AmountCharged() - c.AmountPaid,
+			Description:    "Student has charge with less than 50% paid",
+			Link:           ChargeURLBase + strconv.Itoa(c.ID),
+			LinkType:       LinkTypeCharge,
+			LinkValue:      c.AmountCharged() - c.AmountPaid,
+			LinkAdditional: c.Description(),
 		})
 
 	}
 
 	for _, c := range redCharges {
 		status.Issues = append(status.Issues, &Issue{
-			Description: "Student has unpaid charge",
-			Link:        ChargeURLBase + strconv.Itoa(c.ID),
-			LinkType:    LinkTypeCharge,
-			LinkValue:   c.AmountCharged() - c.AmountPaid,
+			Description:    "Student has unpaid charge",
+			Link:           ChargeURLBase + strconv.Itoa(c.ID),
+			LinkType:       LinkTypeCharge,
+			LinkValue:      c.AmountCharged() - c.AmountPaid,
+			LinkAdditional: c.Description(),
 		})
 	}
 

@@ -29,6 +29,20 @@ func (c *Charge) AmountCharged() float32 {
 	return total
 }
 
+//Description is a list of the reasons for the charge
+func (c *Charge) Description() string {
+	var reasons []string
+	for _, charge := range strings.Split(c.charges, "|") {
+		if split := strings.Split(strings.TrimSpace(charge), ":"); len(split) == 2 {
+			reasons = append(reasons, strings.TrimSpace(split[1]))
+		}
+	}
+	if len(reasons) == 0 {
+		return ""
+	}
+	return strings.Join(reasons, ", ")
+}
+
 func getChargeList(ctx context.Context, name string) ([]*Charge, error) {
 	tx := ctx.Value(InventoryTransactionKey).(*sql.Tx)
 
