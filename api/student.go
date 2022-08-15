@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-//formalizeName tries to return the pretty (capitalized) version of the given name
+// formalizeName tries to return the pretty (capitalized) version of the given name
 func formalizeName(name string) string {
 	name = strings.Title(strings.ToLower(strings.TrimSpace(name)))
 
@@ -32,7 +32,7 @@ func formalizeName(name string) string {
 	return name
 }
 
-//Student represents a Skyward Student
+// Student represents a Skyward Student
 type Student struct {
 	FirstName  string
 	LastName   string
@@ -41,12 +41,12 @@ type Student struct {
 	T2E2Status *string
 }
 
-//Name returns to formalized name of the Student
+// Name returns to formalized name of the Student
 func (s Student) Name() string {
 	return fmt.Sprintf("%s %s", s.FirstName, s.LastName)
 }
 
-//GetStudent returns the Student with the given otherID
+// GetStudent returns the Student with the given otherID
 func GetStudent(ctx context.Context, otherID string) (*Student, error) {
 	tx := ctx.Value(SkywardTransactionKey).(*sql.Tx)
 
@@ -84,7 +84,7 @@ func GetStudent(ctx context.Context, otherID string) (*Student, error) {
 		INNER JOIN PUB."QUDTBL-TABLES" AS tables ON
 			data."QUDDAT-STORAGE-TYPE" = 'Custom Student' AND
 			data."QUDTBL-TABLE-ID" = tables."QUDTBL-TABLE-ID" AND
-			tables."QUDTBL-DESC" = '21-22 T2E2'
+			tables."QUDTBL-DESC" = 'T2E2'
 
 		INNER JOIN PUB."QUDFLD-FIELDS" AS fields ON
 			data."QUDFLD-FIELD-ID" = fields."QUDFLD-FIELD-ID" AND
@@ -119,7 +119,7 @@ func GetStudent(ctx context.Context, otherID string) (*Student, error) {
 	return s, nil
 }
 
-//GetStudentList returns a list of all Students
+// GetStudentList returns a list of all Students
 func GetStudentList(ctx context.Context) ([]*Student, error) {
 	tx := ctx.Value(SkywardTransactionKey).(*sql.Tx)
 
@@ -150,7 +150,7 @@ func GetStudentList(ctx context.Context) ([]*Student, error) {
 		INNER JOIN PUB."QUDTBL-TABLES" AS tables ON
 			data."QUDDAT-STORAGE-TYPE" = 'Custom Student' AND
 			data."QUDTBL-TABLE-ID" = tables."QUDTBL-TABLE-ID" AND
-			tables."QUDTBL-DESC" = '21-22 T2E2'
+			tables."QUDTBL-DESC" = 'T2E2'
 
 		INNER JOIN PUB."QUDFLD-FIELDS" AS fields ON
 			data."QUDFLD-FIELD-ID" = fields."QUDFLD-FIELD-ID" AND
