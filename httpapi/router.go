@@ -9,7 +9,7 @@ import (
 	"github.com/korylprince/bisd-device-checkout-server/api"
 )
 
-//NewRouter returns an HTTP router for the HTTP API
+// NewRouter returns an HTTP router for the HTTP API
 func NewRouter(w io.Writer, config *api.AuthConfig, s SessionStore, inventoryDB, skywardDB *sql.DB) http.Handler {
 
 	//construct middleware

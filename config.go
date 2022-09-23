@@ -8,7 +8,7 @@ import (
 	auth "github.com/korylprince/go-ad-auth/v3"
 )
 
-//Config represents options given in the environment
+// Config represents options given in the environment
 type Config struct {
 	SessionExpiration int //in minutes; default: 60
 

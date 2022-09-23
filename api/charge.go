@@ -7,14 +7,14 @@ import (
 	"strings"
 )
 
-//Charge represents an inventory charge
+// Charge represents an inventory charge
 type Charge struct {
 	ID         int
 	AmountPaid float32
 	charges    string
 }
 
-//AmountCharged is the total amount charged
+// AmountCharged is the total amount charged
 func (c *Charge) AmountCharged() float32 {
 	var total float32
 	for _, charge := range strings.Split(c.charges, "|") {
@@ -29,7 +29,7 @@ func (c *Charge) AmountCharged() float32 {
 	return total
 }
 
-//Description is a list of the reasons for the charge
+// Description is a list of the reasons for the charge
 func (c *Charge) Description() string {
 	var reasons []string
 	for _, charge := range strings.Split(c.charges, "|") {

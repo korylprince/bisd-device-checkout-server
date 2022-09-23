@@ -2,7 +2,7 @@ package api
 
 import "fmt"
 
-//Error wraps errors in the API
+// Error wraps errors in the API
 type Error struct {
 	Description  string
 	Err          error

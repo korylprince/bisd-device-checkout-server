@@ -7,7 +7,7 @@ import (
 	"github.com/korylprince/bisd-device-checkout-server/api"
 )
 
-//SessionStore is an interface to an arbitrary session backend.
+// SessionStore is an interface to an arbitrary session backend.
 type SessionStore interface {
 	//Create returns a new sessionID with the given User. If the backend malfunctions,
 	//sessionID will be an empty string and err will be non-nil.
@@ -19,20 +19,20 @@ type SessionStore interface {
 	Check(sessionID string) (session *Session, err error)
 }
 
-//Session represents a login session
+// Session represents a login session
 type Session struct {
 	User    *api.User
 	Expires time.Time
 }
 
-//MemorySessionStore represents a SessionStore that uses an in-memory map
+// MemorySessionStore represents a SessionStore that uses an in-memory map
 type MemorySessionStore struct {
 	store    map[string]*Session
 	duration time.Duration
 	mu       *sync.Mutex
 }
 
-//scavenge removes stale records every hour
+// scavenge removes stale records every hour
 func scavenge(m *MemorySessionStore) {
 	for {
 		time.Sleep(time.Hour)
@@ -47,7 +47,7 @@ func scavenge(m *MemorySessionStore) {
 	}
 }
 
-//NewMemorySessionStore returns a new MemorySessionStore with the given expiration duration.
+// NewMemorySessionStore returns a new MemorySessionStore with the given expiration duration.
 func NewMemorySessionStore(duration time.Duration) *MemorySessionStore {
 	m := &MemorySessionStore{
 		store:    make(map[string]*Session),
@@ -58,7 +58,7 @@ func NewMemorySessionStore(duration time.Duration) *MemorySessionStore {
 	return m
 }
 
-//Create returns a new sessionID with the given User. err will always be nil.
+// Create returns a new sessionID with the given User. err will always be nil.
 func (m *MemorySessionStore) Create(user *api.User) (sessionID string, err error) {
 	id := randString(128)
 	m.mu.Lock()
@@ -70,8 +70,8 @@ func (m *MemorySessionStore) Create(user *api.User) (sessionID string, err error
 	return id, nil
 }
 
-//Check returns whether or not sessionID is a valid session. If sessionID is not valid, session will be nil.
-//err will always be nil.
+// Check returns whether or not sessionID is a valid session. If sessionID is not valid, session will be nil.
+// err will always be nil.
 func (m *MemorySessionStore) Check(sessionID string) (session *Session, err error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

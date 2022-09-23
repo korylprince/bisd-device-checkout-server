@@ -6,20 +6,20 @@ import (
 	auth "github.com/korylprince/go-ad-auth/v3"
 )
 
-//AuthConfig holds configuration for connecting to an authentication source
+// AuthConfig holds configuration for connecting to an authentication source
 type AuthConfig struct {
 	ADConfig *auth.Config
 	Group    string
 }
 
-//User represents an Active Directory User
+// User represents an Active Directory User
 type User struct {
 	Username    string `json:"username"`
 	DisplayName string `json:"display_name"`
 }
 
-//Authenticate authenticates the given username and password against the given config,
-//returning user information if successful, nil if unsuccessful, or an error if one occurred.
+// Authenticate authenticates the given username and password against the given config,
+// returning user information if successful, nil if unsuccessful, or an error if one occurred.
 func Authenticate(config *AuthConfig, username, password string) (*User, error) {
 	status, entry, groups, err := auth.AuthenticateExtended(config.ADConfig, username, password, []string{"displayName"}, []string{config.Group})
 	if err != nil {

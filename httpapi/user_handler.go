@@ -9,7 +9,7 @@ import (
 	"github.com/korylprince/bisd-device-checkout-server/api"
 )
 
-//POST /auth
+// POST /auth
 func handleAuthenticate(config *api.AuthConfig, s SessionStore) returnHandler {
 	type request struct {
 		Username string `json:"username"`

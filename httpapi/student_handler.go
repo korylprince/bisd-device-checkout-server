@@ -7,7 +7,7 @@ import (
 	"github.com/korylprince/bisd-device-checkout-server/api"
 )
 
-//GET /students
+// GET /students
 func handleReadStudentList(w http.ResponseWriter, r *http.Request) *handlerResponse {
 	type student struct {
 		FirstName      string `json:"first_name"`
@@ -32,7 +32,7 @@ func handleReadStudentList(w http.ResponseWriter, r *http.Request) *handlerRespo
 	return &handlerResponse{Code: http.StatusOK, Body: list}
 }
 
-//GET /students/:otherID/status
+// GET /students/:otherID/status
 func handleReadStudentStatus(w http.ResponseWriter, r *http.Request) *handlerResponse {
 	otherID := mux.Vars(r)["otherID"]
 
@@ -49,7 +49,7 @@ func handleReadStudentStatus(w http.ResponseWriter, r *http.Request) *handlerRes
 	return &handlerResponse{Code: http.StatusOK, Body: status}
 }
 
-//GET /students?status=true
+// GET /students?status=true
 func handleReadStudentStatuses(w http.ResponseWriter, r *http.Request) *handlerResponse {
 	type student struct {
 		FirstName      string      `json:"first_name"`

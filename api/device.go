@@ -65,8 +65,8 @@ func getDeviceList(ctx context.Context, name string) ([]int, error) {
 	return devices, nil
 }
 
-//CheckoutDevice checks out the device with the given bagTag to the student with the given otherID.
-//extraNote, if non-empty, will be appended to the notes field
+// CheckoutDevice checks out the device with the given bagTag to the student with the given otherID.
+// extraNote, if non-empty, will be appended to the notes field
 func CheckoutDevice(ctx context.Context, otherID, bagTag, extraNote string) error {
 	student, err := GetStudent(ctx, otherID)
 	if err != nil {

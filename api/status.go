@@ -5,22 +5,22 @@ import (
 	"strconv"
 )
 
-//ChargeURLBase is the base URL used for charge links
+// ChargeURLBase is the base URL used for charge links
 var ChargeURLBase = "/charges/edit?type=id&search="
 
-//DeviceURLBase is the base URL used for device links
+// DeviceURLBase is the base URL used for device links
 var DeviceURLBase = "/edit?type=id&search="
 
-//LinkType is the type of a link
+// LinkType is the type of a link
 type LinkType string
 
-//Link types
+// Link types
 const (
 	LinkTypeDevice LinkType = "device"
 	LinkTypeCharge LinkType = "charge"
 )
 
-//Issue represents an issue with a student
+// Issue represents an issue with a student
 type Issue struct {
 	Description    string   `json:"description,omitempty"`
 	Link           string   `json:"link,omitempty"`
@@ -29,23 +29,23 @@ type Issue struct {
 	LinkAdditional string   `json:"link_additional,omitempty"`
 }
 
-//StatusType is the type of Chromebook a student will receive
+// StatusType is the type of Chromebook a student will receive
 type StatusType string
 
-//Status types
+// Status types
 const (
 	StatusTypeNone     StatusType = "none"
 	StatusTypeRedBag   StatusType = "red_bag"
 	StatusTypeBlackBag StatusType = "black_bag"
 )
 
-//Status represents the status of a student
+// Status represents the status of a student
 type Status struct {
 	Type   StatusType `json:"type"`
 	Issues []*Issue   `json:"issues,omitempty"`
 }
 
-//Status returns the Status of the student
+// Status returns the Status of the student
 func (s *Student) Status(ctx context.Context) (*Status, error) {
 	status := &Status{Issues: make([]*Issue, 0)}
 

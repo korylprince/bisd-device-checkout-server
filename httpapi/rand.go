@@ -11,7 +11,7 @@ import (
 var chars = []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 var max = big.NewInt(int64(len(chars)))
 
-//fallbackRand uses less random math/rand in case of failure
+// fallbackRand uses less random math/rand in case of failure
 func fallbackRand(err error) int {
 	log.Println("Could not use crypto/rand:", err)
 
@@ -19,7 +19,7 @@ func fallbackRand(err error) int {
 	return mrand.Int() % len(chars)
 }
 
-//randString returns a random string of given length using crypto/rand
+// randString returns a random string of given length using crypto/rand
 func randString(length int) string {
 	str := make([]byte, length)
 	for i := range str {

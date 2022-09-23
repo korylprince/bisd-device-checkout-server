@@ -9,7 +9,7 @@ import (
 	"github.com/korylprince/bisd-device-checkout-server/api"
 )
 
-//POST /devices/:bagTag/checkout
+// POST /devices/:bagTag/checkout
 func handleCheckoutDevice(w http.ResponseWriter, r *http.Request) *handlerResponse {
 	type request struct {
 		Note string `json:"note,omitempty"`
