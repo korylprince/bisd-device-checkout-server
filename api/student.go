@@ -34,11 +34,12 @@ func formalizeName(name string) string {
 
 // Student represents a Skyward Student
 type Student struct {
-	FirstName  string
-	LastName   string
-	OtherID    string
-	Grade      int
-	T2E2Status *string
+	FirstName                 string
+	LastName                  string
+	OtherID                   string
+	Grade                     int
+	T2E2Status                *string
+	EconomicallyDisadvantaged bool
 }
 
 // Name returns to formalized name of the Student
@@ -63,7 +64,12 @@ func GetStudent(ctx context.Context, otherID string) (*Student, error) {
 		name."LAST-NAME" AS Last_Name,
 		student."OTHER-ID" AS Other_I_D,
 		(12 - (student."GRAD-YR" - entity."SCHOOL-YEAR")) AS Grade,
-		data."STATUS" AS Status
+		data."STATUS" AS Status,
+        CASE
+            WHEN eco."ECO-DIS-CODE" = '00' THEN CAST(0 AS BIT)
+            WHEN eco."ECO-DIS-CODE" IS NULL THEN CAST(0 AS BIT)
+            ELSE CAST(1 AS BIT)
+        END AS Economically_Disadvantaged
 	FROM PUB.NAME AS name
 	INNER JOIN PUB."STUDENT" AS student ON
 		name."NAME-ID" = student."NAME-ID"
@@ -92,6 +98,26 @@ func GetStudent(ctx context.Context, otherID string) (*Student, error) {
     ) AS data ON
 		student."STUDENT-ID" = data."STUDENT-ID"
 
+    LEFT JOIN (
+        SELECT
+            tran."NAME-ID",
+            code."FS-LUN-CODE-STATE" AS "ECO-DIS-CODE"
+
+        FROM PUB."FS-TRANSACTION" AS tran
+
+        INNER JOIN (
+            SELECT "NAME-ID", MAX("FS-TRAN-EFFECTIVE-DATE") AS "FS-TRAN-EFFECTIVE-DATE"
+            FROM PUB."FS-TRANSACTION"
+            GROUP BY "NAME-ID"
+        ) AS filter ON
+                filter."NAME-ID" = tran."NAME-ID" AND
+                filter."FS-TRAN-EFFECTIVE-DATE" = tran."FS-TRAN-EFFECTIVE-DATE"
+
+        INNER JOIN PUB."FS-LUN-CODE" AS code ON
+            code."FS-LUN-CODE-ID" = tran."FS-LUN-CODE-ID"
+    ) AS eco ON
+        name."NAME-ID" = eco."NAME-ID"
+
 	WHERE sentity."STUDENT-STATUS" = 'A' AND
 	student."GRAD-YR" >= entity."SCHOOL-YEAR" AND
 	(student."GRAD-YR" - entity."SCHOOL-YEAR") < 6 AND
@@ -104,6 +130,7 @@ func GetStudent(ctx context.Context, otherID string) (*Student, error) {
 		&(s.OtherID),
 		&(s.Grade),
 		&(s.T2E2Status),
+		&(s.EconomicallyDisadvantaged),
 	)
 
 	switch {
@@ -129,7 +156,12 @@ func GetStudentList(ctx context.Context) ([]*Student, error) {
 		name."LAST-NAME" AS Last_Name,
 		student."OTHER-ID" AS Other_I_D,
 		(12 - (student."GRAD-YR" - entity."SCHOOL-YEAR")) AS Grade,
-		data."STATUS" AS Status
+		data."STATUS" AS Status,
+        CASE
+            WHEN eco."ECO-DIS-CODE" = '00' THEN CAST(0 AS BIT)
+            WHEN eco."ECO-DIS-CODE" IS NULL THEN CAST(0 AS BIT)
+            ELSE CAST(1 AS BIT)
+        END AS Economically_Disadvantaged
 	FROM PUB.NAME AS name
 	INNER JOIN PUB."STUDENT" AS student ON
 		name."NAME-ID" = student."NAME-ID"
@@ -158,6 +190,26 @@ func GetStudentList(ctx context.Context) ([]*Student, error) {
     ) AS data ON
 		student."STUDENT-ID" = data."STUDENT-ID"
 
+    LEFT JOIN (
+        SELECT
+            tran."NAME-ID",
+            code."FS-LUN-CODE-STATE" AS "ECO-DIS-CODE"
+
+        FROM PUB."FS-TRANSACTION" AS tran
+
+        INNER JOIN (
+            SELECT "NAME-ID", MAX("FS-TRAN-EFFECTIVE-DATE") AS "FS-TRAN-EFFECTIVE-DATE"
+            FROM PUB."FS-TRANSACTION"
+            GROUP BY "NAME-ID"
+        ) AS filter ON
+                filter."NAME-ID" = tran."NAME-ID" AND
+                filter."FS-TRAN-EFFECTIVE-DATE" = tran."FS-TRAN-EFFECTIVE-DATE"
+
+        INNER JOIN PUB."FS-LUN-CODE" AS code ON
+            code."FS-LUN-CODE-ID" = tran."FS-LUN-CODE-ID"
+    ) AS eco ON
+        name."NAME-ID" = eco."NAME-ID"
+
 	WHERE sentity."STUDENT-STATUS" = 'A' AND
 	student."GRAD-YR" >= entity."SCHOOL-YEAR" AND
 	(student."GRAD-YR" - entity."SCHOOL-YEAR") < 6
@@ -178,7 +230,7 @@ func GetStudentList(ctx context.Context) ([]*Student, error) {
 
 	for rows.Next() {
 		s := new(Student)
-		if err := rows.Scan(&(firstName), &(lastName), &(s.OtherID), &(s.Grade), &(s.T2E2Status)); err != nil {
+		if err := rows.Scan(&(firstName), &(lastName), &(s.OtherID), &(s.Grade), &(s.T2E2Status), &(s.EconomicallyDisadvantaged)); err != nil {
 			return nil, &Error{Description: "Could not scan Student row", Err: err}
 		}
 

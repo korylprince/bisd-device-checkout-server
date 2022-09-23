@@ -10,10 +10,11 @@ import (
 //GET /students
 func handleReadStudentList(w http.ResponseWriter, r *http.Request) *handlerResponse {
 	type student struct {
-		FirstName string `json:"first_name"`
-		LastName  string `json:"last_name"`
-		OtherID   string `json:"other_id"`
-		Grade     int    `json:"grade"`
+		FirstName      string `json:"first_name"`
+		LastName       string `json:"last_name"`
+		OtherID        string `json:"other_id"`
+		Grade          int    `json:"grade"`
+		FeeForgiveness bool   `json:"fee_forgiveness"`
 	}
 
 	type response []*student
@@ -25,7 +26,7 @@ func handleReadStudentList(w http.ResponseWriter, r *http.Request) *handlerRespo
 
 	var list response
 	for _, s := range students {
-		list = append(list, &student{FirstName: s.FirstName, LastName: s.LastName, OtherID: s.OtherID, Grade: s.Grade})
+		list = append(list, &student{FirstName: s.FirstName, LastName: s.LastName, OtherID: s.OtherID, Grade: s.Grade, FeeForgiveness: s.EconomicallyDisadvantaged})
 	}
 
 	return &handlerResponse{Code: http.StatusOK, Body: list}
@@ -51,11 +52,12 @@ func handleReadStudentStatus(w http.ResponseWriter, r *http.Request) *handlerRes
 //GET /students?status=true
 func handleReadStudentStatuses(w http.ResponseWriter, r *http.Request) *handlerResponse {
 	type student struct {
-		FirstName string      `json:"first_name"`
-		LastName  string      `json:"last_name"`
-		OtherID   string      `json:"other_id"`
-		Grade     int         `json:"grade"`
-		Status    *api.Status `json:"status"`
+		FirstName      string      `json:"first_name"`
+		LastName       string      `json:"last_name"`
+		OtherID        string      `json:"other_id"`
+		Grade          int         `json:"grade"`
+		FeeForgiveness bool        `json:"fee_forgiveness"`
+		Status         *api.Status `json:"status"`
 	}
 
 	students, err := api.GetStudentList(r.Context())
@@ -71,11 +73,12 @@ func handleReadStudentStatuses(w http.ResponseWriter, r *http.Request) *handlerR
 			return resp
 		}
 		list = append(list, &student{
-			FirstName: stu.FirstName,
-			LastName:  stu.LastName,
-			OtherID:   stu.OtherID,
-			Grade:     stu.Grade,
-			Status:    status,
+			FirstName:      stu.FirstName,
+			LastName:       stu.LastName,
+			OtherID:        stu.OtherID,
+			Grade:          stu.Grade,
+			FeeForgiveness: stu.EconomicallyDisadvantaged,
+			Status:         status,
 		})
 	}
 
