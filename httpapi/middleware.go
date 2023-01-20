@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"context"
+	"crypto/subtle"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -115,6 +116,26 @@ func authMiddleware(next returnHandler, s SessionStore) returnHandler {
 		resp.User = sess.User
 
 		return resp
+	}
+}
+
+func authKeyMiddleware(next returnHandler, key string) returnHandler {
+	keybuf := []byte("Bearer " + key)
+	keylen := int32(len(keybuf))
+	return func(w http.ResponseWriter, r *http.Request) *handlerResponse {
+		if keylen == 0 {
+			return notFoundHandler(w, r)
+		}
+		auth := r.Header.Get("Authorization")
+		if auth == "" {
+			return handleError(http.StatusUnauthorized, errors.New("No Authorization header"))
+		}
+
+		authbuf := []byte(auth)
+		if subtle.ConstantTimeEq(keylen, int32(len(authbuf))) != 1 || subtle.ConstantTimeCompare(keybuf, authbuf) != 1 {
+			return handleError(http.StatusUnauthorized, errors.New("Invalid Authorization"))
+		}
+		return next(w, r)
 	}
 }
 

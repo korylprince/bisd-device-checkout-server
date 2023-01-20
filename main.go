@@ -38,7 +38,7 @@ func main() {
 
 	s := httpapi.NewMemorySessionStore(time.Minute * time.Duration(config.SessionExpiration))
 
-	r := httpapi.NewRouter(os.Stdout, adConfig, s, inventoryDB, skywardDB)
+	r := httpapi.NewRouter(os.Stdout, adConfig, config.APIKey, s, inventoryDB, skywardDB)
 
 	chain := handlers.CompressHandler(handlers.CORS(
 		handlers.AllowedOrigins([]string{"*"}),

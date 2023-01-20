@@ -23,6 +23,7 @@ type Config struct {
 	InventoryDSN string //required
 	SkywardDSN   string //required
 
+	APIKey     string
 	ListenAddr string //addr format used for net.Dial; required
 	Prefix     string //url prefix to mount api to without trailing slash
 }
