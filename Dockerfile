@@ -8,6 +8,7 @@ ARG GO_PROJECT_NAME
 ENV GO_PROJECT_NAME=${GO_PROJECT_NAME}
 
 RUN apt-get update && apt-get install -y \
+    ca-certificates \
     unixodbc \
     libstdc++6 \
     && rm -rf /var/lib/apt/lists/*
