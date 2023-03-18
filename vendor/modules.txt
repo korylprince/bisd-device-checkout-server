@@ -1,18 +1,21 @@
-# github.com/alexbrainman/odbc v0.0.0-20210605012845-39f8520b0d5f
+# github.com/Azure/go-ntlmssp v0.0.0-20221128193559-754e69321358
+## explicit
+github.com/Azure/go-ntlmssp
+# github.com/alexbrainman/odbc v0.0.0-20211220213544-9c9a2e61c5e2
 ## explicit
 github.com/alexbrainman/odbc
 github.com/alexbrainman/odbc/api
-# github.com/felixge/httpsnoop v1.0.1
+# github.com/felixge/httpsnoop v1.0.3
 ## explicit; go 1.13
 github.com/felixge/httpsnoop
-# github.com/go-asn1-ber/asn1-ber v1.4.1
+# github.com/go-asn1-ber/asn1-ber v1.5.4
 ## explicit; go 1.13
 github.com/go-asn1-ber/asn1-ber
-# github.com/go-ldap/ldap/v3 v3.1.7
-## explicit; go 1.13
+# github.com/go-ldap/ldap/v3 v3.4.4
+## explicit; go 1.14
 github.com/go-ldap/ldap/v3
-# github.com/go-sql-driver/mysql v1.6.0
-## explicit; go 1.10
+# github.com/go-sql-driver/mysql v1.7.0
+## explicit; go 1.13
 github.com/go-sql-driver/mysql
 # github.com/gorilla/handlers v1.5.1
 ## explicit; go 1.14
@@ -23,14 +26,18 @@ github.com/gorilla/mux
 # github.com/kelseyhightower/envconfig v1.4.0
 ## explicit
 github.com/kelseyhightower/envconfig
-# github.com/korylprince/go-ad-auth/v3 v3.1.4
+# github.com/korylprince/go-ad-auth/v3 v3.3.0
 ## explicit; go 1.13
 github.com/korylprince/go-ad-auth/v3
-# golang.org/x/sys v0.0.0-20190916202348-b4ddaad3f8a3
-## explicit; go 1.12
+# golang.org/x/crypto v0.7.0
+## explicit; go 1.17
+golang.org/x/crypto/md4
+# golang.org/x/sys v0.6.0
+## explicit; go 1.17
+golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/windows
-# golang.org/x/text v0.3.2
-## explicit
+# golang.org/x/text v0.8.0
+## explicit; go 1.17
 golang.org/x/text/encoding
 golang.org/x/text/encoding/internal
 golang.org/x/text/encoding/internal/identifier
