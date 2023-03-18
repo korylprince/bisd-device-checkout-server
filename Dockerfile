@@ -1,13 +1,16 @@
-FROM golang:1-alpine as builder
+FROM golang:1 as builder
 
 RUN go install github.com/korylprince/fileenv@v1.1.0
 
-FROM alpine:latest
+FROM ubuntu:latest
 
 ARG GO_PROJECT_NAME
 ENV GO_PROJECT_NAME=${GO_PROJECT_NAME}
 
-RUN apk add --no-cache ca-certificates unixodbc libstdc++
+RUN apt-get update && apt-get install -y \
+    unixodbc \
+    libstdc++6 \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /go/bin/fileenv /
 COPY docker-entrypoint.sh /
