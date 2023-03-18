@@ -16,7 +16,12 @@ COPY --from=builder /go/bin/fileenv /
 COPY docker-entrypoint.sh /
 COPY ${GO_PROJECT_NAME} /
 
-# container expects pgoe27.so, libpgicu27.so, and PGODBC.LIC are located in /usr/local/lib/
+# container expects pgoe27.so, libpgicu27.so, and PGODBC.LIC are mounted at /progress_driver
+RUN mkdir -p /usr/local/lib && \
+    ln -s /progress_driver/pgoe27.so /usr/local/lib/pgoe27.so && \
+    ln -s /progress_driver/libpgicu27.so /usr/local/lib/libpgicu27.so && \
+    ln -s /progress_driver/PGODBC.LIC /usr/local/lib/PGODBC.LIC
+
 RUN echo "[Progress]" > /etc/odbcinst.ini && echo "Driver=/usr/local/lib/pgoe27.so" >> /etc/odbcinst.ini
 
 CMD ["/fileenv", "/docker-entrypoint.sh"]
