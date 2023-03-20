@@ -8,7 +8,7 @@ import (
 )
 
 // GET /students
-func handleReadStudentList(w http.ResponseWriter, r *http.Request) *handlerResponse {
+func handleReadStudentList(_ http.ResponseWriter, r *http.Request) *handlerResponse {
 	type student struct {
 		FirstName      string `json:"first_name"`
 		LastName       string `json:"last_name"`
@@ -33,7 +33,7 @@ func handleReadStudentList(w http.ResponseWriter, r *http.Request) *handlerRespo
 }
 
 // GET /students/:otherID/status
-func handleReadStudentStatus(w http.ResponseWriter, r *http.Request) *handlerResponse {
+func handleReadStudentStatus(_ http.ResponseWriter, r *http.Request) *handlerResponse {
 	otherID := mux.Vars(r)["otherID"]
 
 	student, err := api.GetStudent(r.Context(), otherID)
@@ -50,7 +50,7 @@ func handleReadStudentStatus(w http.ResponseWriter, r *http.Request) *handlerRes
 }
 
 // GET /students?status=true
-func handleReadStudentStatuses(w http.ResponseWriter, r *http.Request) *handlerResponse {
+func handleReadStudentStatuses(_ http.ResponseWriter, r *http.Request) *handlerResponse {
 	type student struct {
 		FirstName      string      `json:"first_name"`
 		LastName       string      `json:"last_name"`

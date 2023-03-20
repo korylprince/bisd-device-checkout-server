@@ -20,7 +20,7 @@ func handleError(code int, err error) *handlerResponse {
 }
 
 // notFoundHandler returns a 401 handlerResponse
-func notFoundHandler(w http.ResponseWriter, r *http.Request) *handlerResponse {
+func notFoundHandler(_ http.ResponseWriter, _ *http.Request) *handlerResponse {
 	return handleError(http.StatusNotFound, errors.New("Could not find handler"))
 }
 

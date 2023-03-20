@@ -82,11 +82,9 @@ func (s *Student) Status(ctx context.Context) (*Status, error) {
 
 	for _, c := range charges {
 		//subtract one to take rounding errors out of the mix
-		if c.AmountCharged()-c.AmountPaid-1 <= 0 {
-			//pass
-		} else if c.AmountPaid >= (c.AmountCharged()/2)-1 {
+		if c.AmountPaid >= (c.AmountCharged()/2)-1 {
 			redCharges = append(redCharges, c)
-		} else {
+		} else if c.AmountCharged()-c.AmountPaid-1 > 0 {
 			noneCharges = append(noneCharges, c)
 		}
 	}

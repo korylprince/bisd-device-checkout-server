@@ -10,7 +10,7 @@ import (
 )
 
 // POST /devices/:bagTag/checkout
-func handleCheckoutDevice(w http.ResponseWriter, r *http.Request) *handlerResponse {
+func handleCheckoutDevice(_ http.ResponseWriter, r *http.Request) *handlerResponse {
 	type request struct {
 		Note string `json:"note,omitempty"`
 	}
