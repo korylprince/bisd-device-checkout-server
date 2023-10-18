@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"math"
 	"strconv"
 )
 
@@ -82,9 +83,14 @@ func (s *Student) Status(ctx context.Context) (*Status, error) {
 
 	for _, c := range charges {
 		//subtract one to take rounding errors out of the mix
-		if c.AmountPaid >= (c.AmountCharged()/2)-1 {
+		if math.Abs(float64(c.AmountCharged()-c.AmountPaid)) < 1 {
+			// charge is paid
+			continue
+		} else if c.AmountPaid >= (c.AmountCharged()/2)-1 {
+			// half or more is paid
 			redCharges = append(redCharges, c)
 		} else if c.AmountCharged()-c.AmountPaid-1 > 0 {
+			// less than half is paid
 			noneCharges = append(noneCharges, c)
 		}
 	}
